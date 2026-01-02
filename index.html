@@ -3,149 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Houssem GPA - Full Subjects</title>
+    <title>Houssem GPA - Full Streams</title>
     <style>
         :root { --blue: #002868; --red: #bf0a30; --green: #2ecc71; --orange: #f39c12; }
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        .container { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 650px; border-top: 6px solid var(--blue); margin-bottom: 15px; box-sizing: border-box; }
-        h2 { color: var(--red); text-align: center; font-size: 1.2em; margin: 10px 0; }
+        .container { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 750px; border-top: 6px solid var(--blue); margin-bottom: 15px; box-sizing: border-box; }
         
-        .timer-box { display: flex; justify-content: space-around; background: var(--blue); color: white; padding: 15px; border-radius: 10px; text-align: center; }
-        .timer-item b { display: block; color: #f1c40f; font-size: 1.1em; }
+        .selection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #eef2f7; padding: 15px; border-radius: 10px; margin-top: 10px; }
+        select { width: 100%; padding: 10px; border-radius: 6px; border: 2px solid var(--blue); font-weight: bold; }
 
-        .quick-fill-area { background: #eef2f7; padding: 12px; border-radius: 10px; margin-top: 15px; border: 1px dashed var(--blue); text-align: center; }
-        .fill-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin-top: 8px; }
-        select, .q-input { padding: 8px; border-radius: 5px; border: 1px solid var(--blue); font-weight: bold; }
-        .btn-fill { background: var(--blue); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .amazigh-toggle { background: #fff3cd; padding: 10px; border-radius: 8px; margin: 10px 0; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid #ffeeba; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--green); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
-        .table-wrapper { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid #eee; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; min-width: 550px; }
+        .table-wrapper { width: 100%; overflow-x: auto; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.85em; }
         th { background: #f8f9fa; color: var(--blue); }
-        
         input[type="number"] { width: 45px; padding: 5px; border-radius: 4px; border: 1px solid #ccc; text-align: center; font-weight: bold; }
 
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
-        .btn { padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 1em; }
+        .btn { padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; }
         .btn-calc { background: var(--red); grid-column: span 2; }
         .btn-save { background: var(--green); }
         .btn-restore { background: var(--orange); }
-        #result-card { margin-top: 15px; padding: 15px; border-radius: 10px; text-align: center; display: none; font-weight: bold; color: white; font-size: 1.3em; }
+        #result-card { margin-top: 15px; padding: 20px; border-radius: 10px; text-align: center; display: none; font-weight: bold; color: white; font-size: 1.5em; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🇩🇿 مؤقت الامتحانات 2026</h2>
-    <div class="timer-box">
-        <div class="timer-item"><h4>BEM 2026</h4><b id="bem-v">149 يوم</b></div>
-        <div class="timer-item"><h4>BAC 2026</h4><b id="bac-v">156 يوم</b></div>
-    </div>
-
-    <div class="quick-fill-area">
-        <strong>⚡ ملء عمود محدد:</strong>
-        <div class="fill-controls">
-            <select id="target-col">
-                <option value="0">تقويم</option>
-                <option value="1">ا.تطبيقية</option>
-                <option value="2">فرض 1</option>
-                <option value="3">فرض 2</option>
-                <option value="4">اختبار</option>
+    <h2 style="text-align:center; color:var(--blue);">📊 حاسبة المعدل الثانوي الشاملة</h2>
+    <div class="selection-box">
+        <div>
+            <label>المستوى:</label>
+            <select id="level" onchange="updateStreams()">
+                <option value="1">1 ثانوي</option>
+                <option value="2">2 ثانوي</option>
+                <option value="3">3 ثانوي (باكالوريا)</option>
             </select>
-            <input type="number" id="q-val" class="q-input" min="0" max="20" placeholder="10">
-            <button class="btn-fill" onclick="fillSpecific()">تطبيق ✨</button>
         </div>
+        <div>
+            <label>الشعبة:</label>
+            <select id="stream" onchange="loadSubjects()"></select>
+        </div>
+    </div>
+    <div class="amazigh-toggle">
+        <span>إضافة مادة الأمازيغية؟</span>
+        <label class="switch"><input type="checkbox" id="amazigh-check" onchange="loadSubjects()"><span class="slider"></span></label>
     </div>
 </div>
 
 <div class="container">
-    <h2>📊 حاسبة المعدل </h2>
     <div class="table-wrapper">
         <table>
-            <thead>
-                <tr>
-                    <th>المادة</th>
-                    <th>تقويم</th>
-                    <th>ا.تطبيقية</th>
-                    <th>فرض1</th>
-                    <th>فرض2</th>
-                    <th>اختبار</th>
-                    <th>معامل</th>
-                </tr>
-            </thead>
-            <tbody id="m-body">
-                <tr data-coef="3"><td>اللغة العربية</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>3</td></tr>
-                <tr data-coef="5"><td>الرياضيات</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>5</td></tr>
-                <tr data-coef="4"><td>الفيزياء</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>4</td></tr>
-                <tr data-coef="4"><td>العلوم</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>4</td></tr>
-                <tr data-coef="2"><td>الإنجليزية</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
-                <tr data-coef="2"><td>الفرنسية</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
-                <tr data-coef="2"><td>اجتماعيات</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
-                <tr data-coef="2"><td>إسلامية</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
-                <tr data-coef="2"><td>تكنولوجيا</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
-                <tr data-coef="2"><td>إعلام آلي</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
-                <tr data-coef="1"><td>تربية فنية</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>1</td></tr>
-                <tr data-coef="1"><td>رياضة</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>1</td></tr>
-            </tbody>
+            <thead><tr><th>المادة</th><th>تقويم</th><th>تطبيقي</th><th>فرض1</th><th>فرض2</th><th>اختبار</th><th>معامل</th></tr></thead>
+            <tbody id="m-body"></tbody>
         </table>
     </div>
-
     <div class="btn-group">
         <button class="btn btn-calc" onclick="calculate()">احسب المعدل الآن 🚀</button>
-        <button class="btn btn-save" onclick="save()">حفظ النقاط 📑</button>
-        <button class="btn btn-restore" onclick="restore()">استرجاع النقاط 🔄</button>
+        <button class="btn btn-save" onclick="save()">حفظ ✅</button>
+        <button class="btn btn-restore" onclick="restore()">استرجاع 🔄</button>
     </div>
     <div id="result-card"></div>
 </div>
 
 <script>
-    function v(el) { if(el.value>20) el.value=20; if(el.value<0 && el.value!=="") el.value=0; }
+    const allData = {
+        "1": {
+            "جذع مشترك علوم وتكنولوجيا": [["رياضيات",5],["فيزياء",4],["علوم طبيعية",4],["لغة عربية",3],["فرنسية",2],["انجليزية",2],["اجتماعيات",2],["إسلامية",2],["تكنولوجيا",2],["إعلام آلي",2],["رياضة",1]],
+            "جذع مشترك آداب": [["لغة عربية",5],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["علوم إسلامية",2],["رياضيات",2],["علوم طبيعية",2],["إعلام آلي",2],["رياضة",1]]
+        },
+        "2": {
+            "علوم تجريبية": [["علوم طبيعية",6],["فيزياء",5],["رياضيات",5],["لغة عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم طبيعية",2],["لغة عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",5],["لغة عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "تسيير واقتصاد": [["تسيير محاسبي",6],["اقتصاد ومناجمنت",5],["رياضيات",5],["قانون",2],["لغة عربية",3],["اجتماعيات",4],["إسلامية",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "آداب وفلسفة": [["فلسفة",5],["لغة عربية",5],["اجتماعيات",4],["لغة فرنسية",3],["لغة انجليزية",3],["علوم إسلامية",2],["رياضيات",2],["رياضة",1]],
+            "لغات أجنبية": [["لغة عربية",4],["لغة فرنسية",4],["لغة انجليزية",4],["لغة أجنبية 3",4],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["رياضيات",2],["رياضة",1]]
+        },
+        "3": {
+            "علوم تجريبية": [["علوم طبيعية",6],["فيزياء",5],["رياضيات",5],["لغة عربية",3],["إسلامية",2],["اجتماعيات",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم طبيعية",2],["لغة عربية",3],["إسلامية",2],["اجتماعيات",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",6],["لغة عربية",3],["إسلامية",2],["اجتماعيات",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "تسيير واقتصاد": [["تسيير محاسبي",6],["اقتصاد ومناجمنت",5],["قانون",2],["رياضيات",5],["لغة عربية",3],["اجتماعيات",4],["إسلامية",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "آداب وفلسفة": [["فلسفة",6],["لغة عربية",6],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["رياضة",1]],
+            "لغات أجنبية": [["لغة عربية",5],["لغة فرنسية",4],["لغة انجليزية",4],["لغة أجنبية 3",4],["فلسفة",2],["اجتماعيات",2],["إسلامية",2],["رياضيات",2],["رياضة",1]]
+        }
+    };
 
-    function fillSpecific() {
-        let colIdx = document.getElementById("target-col").value;
-        let val = document.getElementById("q-val").value;
-        if(val==="" || val<0 || val>20) return alert("أدخل نقطة صحيحة");
-        document.querySelectorAll("#m-body tr").forEach(row => {
-            row.querySelectorAll("input")[colIdx].value = val;
-        });
+    function updateStreams() {
+        const lvl = document.getElementById("level").value;
+        const streamSelect = document.getElementById("stream");
+        streamSelect.innerHTML = "";
+        for (let s in allData[lvl]) {
+            let opt = document.createElement("option"); opt.value = s; opt.innerText = s;
+            streamSelect.appendChild(opt);
+        }
+        loadSubjects();
     }
+
+    function loadSubjects() {
+        const lvl = document.getElementById("level").value;
+        const stm = document.getElementById("stream").value;
+        let subjects = [...allData[lvl][stm]];
+        if (document.getElementById("amazigh-check").checked) { subjects.push(["لغة أمازيغية", 2]); }
+        let html = "";
+        subjects.forEach(s => {
+            html += `<tr data-coef="${s[1]}"><td>${s[0]}</td>
+                <td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td>
+                <td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td>
+                <td><input type="number" oninput="v(this)"></td><td><b>${s[1]}</b></td></tr>`;
+        });
+        document.getElementById("m-body").innerHTML = html;
+    }
+
+    function v(el) { if(el.value>20) el.value=20; if(el.value<0) el.value=0; }
 
     function calculate() {
         let tP = 0, tC = 0;
         document.querySelectorAll("#m-body tr").forEach(row => {
-            let ins = row.querySelectorAll("input"), c = parseFloat(row.dataset.coef);
-            let sC = 0, count = 0;
-            for(let i=0; i<4; i++) { 
-                let v = parseFloat(ins[i].value); 
-                if(!isNaN(v)) { sC += v; count++; } 
-            }
+            let ins = row.querySelectorAll("input"), c = parseFloat(row.dataset.coef), sC = 0, count = 0;
+            for(let i=0; i<4; i++) { let v = parseFloat(ins[i].value); if(!isNaN(v)) { sC += v; count++; } }
             let avg = ((count>0 ? sC/count : 0) + (parseFloat(ins[4].value)||0)*2)/3;
             tP += (avg * c); tC += c;
         });
         let res = document.getElementById("result-card");
         res.style.display = "block";
         let final = tP/tC;
-        res.style.background = final>=10 ? "#2ecc71":"#e74c3c";
-        res.innerText = isNaN(final) ? "أدخل النقاط أولاً" : "المعدل الفصلي: " + final.toFixed(2);
+        res.style.background = final>=10 ? "#2ecc71" : "#e74c3c";
+        res.innerText = isNaN(final) ? "أدخل النقاط" : "المعدل: " + final.toFixed(2);
     }
 
     function save() {
-        let s = []; document.querySelectorAll("#m-body input").forEach(i => s.push(i.value));
-        localStorage.setItem("HOUSSEM_V10", JSON.stringify(s)); alert("تم الحفظ ✅");
+        let s = { lvl: document.getElementById("level").value, stm: document.getElementById("stream").value, amz: document.getElementById("amazigh-check").checked, scores: [] };
+        document.querySelectorAll("#m-body input").forEach(i => s.scores.push(i.value));
+        localStorage.setItem("HOUSSEM_FULL_SEC_V3", JSON.stringify(s)); alert("تم حفظ بياناتك ✅");
     }
 
     function restore() {
-        let d = JSON.parse(localStorage.getItem("HOUSSEM_V10"));
-        if(!d) return alert("لا يوجد محفوظات");
-        document.querySelectorAll("#m-body input").forEach((i, idx) => i.value = d[idx]); alert("تم الاسترجاع 🔄");
+        let d = JSON.parse(localStorage.getItem("HOUSSEM_FULL_SEC_V3"));
+        if(!d) return alert("لا توجد محفوظات");
+        document.getElementById("level").value = d.lvl; updateStreams();
+        document.getElementById("stream").value = d.stm; document.getElementById("amazigh-check").checked = d.amz;
+        loadSubjects();
+        setTimeout(() => { document.querySelectorAll("#m-body input").forEach((i, idx) => i.value = d.scores[idx]); }, 100);
     }
+
+    updateStreams();
 </script>
 </body>
 </html>
-
-
-
-
 
 
 
