@@ -3,89 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة معدل Houssem - أولى ثانوي</title>
+    <title>Houssem GPA Ultimate</title>
     <style>
-        :root { --us-blue: #002868; --us-red: #bf0a30; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 10px; }
-        .container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 100%; max-width: 900px; border-top: 8px solid var(--us-blue); }
-        h2 { color: var(--us-red); text-align: center; margin-bottom: 5px; }
-        p.desc { text-align: center; color: #555; margin-bottom: 20px; font-size: 0.9em; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8em; }
-        th, td { padding: 8px; text-align: center; border-bottom: 1px solid #eee; }
-        th { background-color: var(--us-blue); color: white; }
-        input { width: 40px; padding: 4px; border-radius: 4px; border: 1px solid #ccc; text-align: center; }
-        .btn-calc { width: 100%; background: var(--us-red); color: white; border: none; padding: 15px; border-radius: 8px; margin-top: 20px; cursor: pointer; font-size: 1.1em; font-weight: bold; transition: 0.3s; }
-        .btn-calc:hover { background: var(--us-blue); }
-        #result-display { margin-top: 20px; padding: 15px; border-radius: 10px; text-align: center; display: none; font-size: 1.2em; color: white; }
-        .footer-note { background: #e7f3ff; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 0.85em; border-right: 5px solid var(--us-blue); }
+        :root { --main-blue: #002868; --main-red: #bf0a30; --green: #2ecc71; --orange: #f39c12; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
+        .container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); width: 100%; max-width: 900px; border-top: 8px solid var(--main-blue); margin-bottom: 20px; }
+        h2 { color: var(--main-red); text-align: center; margin-bottom: 15px; }
+        .timer-box { display: flex; justify-content: space-around; background: var(--main-blue); color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
+        .timer-box div b { display: block; color: #f1c40f; font-size: 1.2em; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85em; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: center; }
+        th { background: #f8f9fa; color: var(--main-blue); }
+        input { width: 45px; padding: 5px; border-radius: 5px; border: 1px solid #ccc; text-align: center; font-weight: bold; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 1em; }
+        .btn-calc { background: var(--main-red); grid-column: span 2; font-size: 1.2em; margin-bottom: 5px; }
+        .btn-save { background: var(--green); }
+        .btn-restore { background: var(--orange); }
+        #result-card { margin-top: 20px; padding: 20px; border-radius: 10px; text-align: center; display: none; font-size: 1.5em; font-weight: bold; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>𝐃𝐞𝐬𝐢𝐠𝐧𝐞𝐝 𝐛𝐲 𝐇𝐌𝐃</h2>
-    <p class="desc">حاسبة المعدل الفصلي الشاملة - جذع مشترك علوم وتكنولوجيا سنة اولى ثانوي</p>
+    <h2>🇩🇿 عداد الامتحانات 2026</h2>
+    <div class="timer-box">
+        <div>BEM 2026<b id="bem-count">--</b></div>
+        <div>BAC 2026<b id="bac-count">--</b></div>
+    </div>
+</div>
 
+<div class="container">
+    <h2>📊 حاسب المعدل</h2>
     <table>
         <thead>
             <tr>
-                <th>المادة (Subject)</th>
+                <th>المادة</th>
                 <th>تقويم</th>
-                <th>أ.تطبيقية</th>
-                <th>فرض</th>
+                <th> ا.تطبيقية</th>
+                <th>فرض1</th>
+                <th>فرض2</th>
                 <th>اختبار</th>
                 <th>معامل</th>
             </tr>
         </thead>
-        <tbody id="grades-table">
-            <tr><td>اللغة العربية</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">3</td></tr>
-            <tr><td>الرياضيات</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">5</td></tr>
-            <tr><td>العلوم الفيزيائية</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">4</td></tr>
-            <tr><td>علوم الطبيعة والحياة</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">4</td></tr>
-            <tr><td>العلوم الإسلامية</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">2</td></tr>
-            <tr><td>التاريخ والجغرافيا</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">2</td></tr>
-            <tr><td>اللغة الفرنسية</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">2</td></tr>
-            <tr><td>اللغة الإنجليزية</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">2</td></tr>
-            <tr><td>المعلوماتية</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">2</td></tr>
-            <tr><td>تكنولوجيا</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">2</td></tr>
-            <tr><td>التربية الفنية</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">1</td></tr>
-            <tr><td>ت.بدنية ورياضية</td><td><input type="number" class="t" value=""></td><td><input type="number" class="a" value=""></td><td><input type="number" class="f" value=""></td><td><input type="number" class="x" value=""></td><td class="c">1</td></tr>
+        <tbody id="main-table">
+            <tr data-subject="ar"><td>اللغة العربية</td><td><input type="number" class="val-t"></td><td><input type="number" class="val-a"></td><td><input type="number" class="val-f1"></td><td><input type="number" class="val-f2"></td><td><input type="number" class="val-ex"></td><td class="coef">3</td></tr>
+            <tr data-subject="ma"><td>الرياضيات</td><td><input type="number" class="val-t"></td><td><input type="number" class="val-a"></td><td><input type="number" class="val-f1"></td><td><input type="number" class="val-f2"></td><td><input type="number" class="val-ex"></td><td class="coef">5</td></tr>
+            <tr data-subject="ph"><td>الفيزياء</td><td><input type="number" class="val-t"></td><td><input type="number" class="val-a"></td><td><input type="number" class="val-f1"></td><td><input type="number" class="val-f2"></td><td><input type="number" class="val-ex"></td><td class="coef">4</td></tr>
+            <tr data-subject="sc"><td>العلوم</td><td><input type="number" class="val-t"></td><td><input type="number" class="val-a"></td><td><input type="number" class="val-f1"></td><td><input type="number" class="val-f2"></td><td><input type="number" class="val-ex"></td><td class="coef">4</td></tr>
+            <tr data-subject="en"><td>الإنجليزية</td><td><input type="number" class="val-t"></td><td><input type="number" class="val-a"></td><td><input type="number" class="val-f1"></td><td><input type="number" class="val-f2"></td><td><input type="number" class="val-ex"></td><td class="coef">2</td></tr>
+            <tr data-id="fr"><td>الفرنسية</td><td><input type="number" class="val-t"></td><td><input type="number" class="val-a"></td><td><input type="number" class="val-f1"></td><td><input type="number" class="val-f2"></td><td><input type="number" class="val-ex"></td><td class="coef">2</td></tr>
+            <tr data-id="hg"><td>تاريخ وجغرافيا</td><td><input type="number" class="val-t"></td><td><input type="number" class="val-a"></td><td><input type="number" class="val-f1"></td><td><input type="number" class="val-f2"></td><td><input type="number" class="val-ex"></td><td class="coef">2</td></tr>
+            <tr data-id="is"><td>إسلامية</td><td><input type="number" class="val-t"></td><td><input type="number" class="val-a"></td><td><input type="number" class="val-f1"></td><td><input type="number" class="val-f2"></td><td><input type="number" class="val-ex"></td><td class="coef">2</td></tr>
+            <tr data-id="pe"><td>رياضة</td><td><input type="number" class="val-t"></td><td><input type="number" class="val-a"></td><td><input type="number" class="val-f1"></td><td><input type="number" class="val-f2"></td><td><input type="number" class="val-ex"></td><td class="coef">1</td></tr>
         </tbody>
     </table>
 
-    <button class="btn-calc" onclick="calc()">احسب المعدل النهائي (Final GPA) 🚀</button>
+    <div class="btn-group">
+        <button class="btn btn-calc" onclick="runCalculation()">احسب المعدل الآن 🚀</button>
+        <button class="btn btn-save" onclick="runSave()">حفظ النقاط ✅</button>
+        <button class="btn btn-restore" onclick="runRestore()">استرجاع النقاط 🔄</button>
+    </div>
 
-    <div id="result-display"></div>
-
+    <div id="result-card"></div>
 </div>
 
 <script>
-    function calc() {
-        let rows = document.querySelectorAll("#grades-table tr");
-        let totalWeighted = 0, totalC = 0;
+    // --- تحديث العداد ---
+    function updateTimers() {
+        const bemDate = new Date('June 1, 2026 08:00:00').getTime();
+        const bacDate = new Date('June 8, 2026 08:00:00').getTime();
+        const now = new Date().getTime();
+
+        const calcTime = (target, id) => {
+            let diff = target - now;
+            if (diff < 0) { document.getElementById(id).innerHTML = "بدأ!"; return; }
+            let d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById(id).innerHTML = d + " يوم و " + h + " ساعة";
+        };
+        calcTime(bemDate, 'bem-count');
+        calcTime(bacDate, 'bac-count');
+    }
+    setInterval(updateTimers, 60000); updateTimers();
+
+    // --- الحساب الدقيق ---
+    function runCalculation() {
+        let totalPoints = 0;
+        let totalCoef = 0;
+        const rows = document.querySelectorAll("#main-table tr");
 
         rows.forEach(row => {
-            let t = parseFloat(row.querySelector(".t").value) || 0;
-            let a = parseFloat(row.querySelector(".a").value) || 0;
-            let f = parseFloat(row.querySelector(".f").value) || 0;
-            let x = parseFloat(row.querySelector(".x").value) || 0;
-            let c = parseFloat(row.querySelector(".c").innerText);
+            const inputs = row.querySelectorAll("input");
+            const t = parseFloat(inputs[0].value) || 0;
+            const a = parseFloat(inputs[1].value) || 0;
+            const f1 = parseFloat(inputs[2].value) || 0;
+            const f2 = parseFloat(inputs[3].value) || 0;
+            const ex = parseFloat(inputs[4].value) || 0;
+            const c = parseFloat(row.querySelector(".coef").innerText);
 
-            // حساب المراقبة المستمرة حسب وجود الأعمال التطبيقية
-            let cont = (a > 0) ? (t + a + f) / 3 : (t + f) / 2;
-            let subAvg = (cont + (x * 2)) / 3;
+            let sumCont = 0; let count = 0;
+            [t, a, f1, f2].forEach(v => { if(v > 0) { sumCont += v; count++; } });
+            
+            let contAvg = count > 0 ? (sumCont / count) : 0;
+            let subAvg = (contAvg + (ex * 2)) / 3;
 
-            totalWeighted += (subAvg * c);
-            totalC += c;
+            totalPoints += (subAvg * c);
+            totalCoef += c;
         });
 
-        let final = totalWeighted / totalC;
-        let res = document.getElementById("result-display");
-        res.style.display = "block";
-        res.style.backgroundColor = final >= 10 ? "#2ecc71" : "#e74c3c";
-        res.innerHTML = `معدلك الفصلي هو: ${final.toFixed(2)} <br> <small>${final >= 12 ? "Excellent Start, Houssem!" : "Keep Working Hard!"}</small>`;
+        const finalGPA = totalPoints / totalCoef;
+        const display = document.getElementById("result-card");
+        display.style.display = "block";
+        display.style.backgroundColor = finalGPA >= 10 ? "#2ecc71" : "#e74c3c";
+        display.innerHTML = "المعدل: " + finalGPA.toFixed(2);
+    }
+
+    // --- الحفظ والاسترجاع الآمن ---
+    function runSave() {
+        let storage = [];
+        document.querySelectorAll("#main-table tr").forEach((row, index) => {
+            let rowData = [];
+            row.querySelectorAll("input").forEach(input => rowData.push(input.value));
+            storage.push(rowData);
+        });
+        localStorage.setItem("HOUSSEM_DB_FINAL", JSON.stringify(storage));
+        alert("تم الحفظ في ذاكرة الهاتف بنجاح! ✅");
+    }
+
+    function runRestore() {
+        let rawData = localStorage.getItem("HOUSSEM_DB_FINAL");
+        if (!rawData) { alert("لا توجد بيانات محفوظة!"); return; }
+        
+        let storage = JSON.parse(rawData);
+        document.querySelectorAll("#main-table tr").forEach((row, rowIndex) => {
+            let inputs = row.querySelectorAll("input");
+            if (storage[rowIndex]) {
+                storage[rowIndex].forEach((val, colIndex) => {
+                    inputs[colIndex].value = val;
+                });
+            }
+        });
+        alert("تم استرجاع جميع النقاط! 🔄");
     }
 </script>
-
 </body>
 </html>
