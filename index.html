@@ -3,28 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Houssem GPA Pro - Final</title>
+    <title>Houssem GPA - Materials Count</title>
     <style>
         :root { --blue: #002868; --red: #bf0a30; --green: #2ecc71; --orange: #f39c12; }
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
         .container { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 800px; border-top: 6px solid var(--blue); margin-bottom: 15px; box-sizing: border-box; }
         
-        /* مؤقت الامتحانات - بتنسيق التوسيط الكامل */
-        .exam-timer { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: var(--blue); padding: 15px; border-radius: 10px; color: white; margin-bottom: 15px; }
-        .exam-timer div { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; /* توسيط أفقي */
-            justify-content: center; /* توسيط عمودي */
-            text-align: center; 
-        }
-        .exam-timer b { display: block; color: #f1c40f; font-size: 1.3em; margin-top: 5px; }
+        /* مؤقت الباك */
+        .exam-timer { background: var(--blue); padding: 15px; border-radius: 10px; color: white; margin-bottom: 15px; text-align: center; }
+        .countdown-wrapper { display: flex; justify-content: center; gap: 8px; direction: ltr; margin-top: 10px; }
+        .time-box { background: rgba(255,255,255,0.1); padding: 8px; border-radius: 6px; min-width: 50px; }
+        .time-box b { display: block; color: #f1c40f; font-size: 1.5em; }
+        .time-box small { font-size: 0.6em; color: #ddd; }
 
-        .selection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #eef2f7; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
-        select { width: 100%; padding: 10px; border-radius: 6px; border: 2px solid var(--blue); font-weight: bold; background: white; cursor: pointer; }
+        .selection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #eef2f7; padding: 15px; border-radius: 10px; }
+        select { width: 100%; padding: 10px; border-radius: 6px; border: 2px solid var(--blue); font-weight: bold; }
 
-        .extra-options { display: flex; justify-content: center; gap: 20px; background: #fff3cd; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ffeeba; font-weight: bold; }
+        /* شارة عدد المواد */
+        .stats-bar { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; padding: 10px; background: #fff; border-radius: 8px; border: 1px solid #ddd; }
+        .subjects-count { background: var(--red); color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9em; }
 
+        .extra-options { display: flex; justify-content: center; gap: 20px; font-weight: bold; font-size: 0.9em; }
         .table-wrapper { width: 100%; overflow-x: auto; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; min-width: 700px; }
         th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.85em; }
@@ -33,7 +32,7 @@
         .row-total { font-weight: bold; color: var(--red); background: #fff5f5; }
 
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .btn { padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.3s; }
+        .btn { padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; }
         .btn-calc { background: var(--red); grid-column: span 2; }
         .btn-save { background: var(--green); }
         .btn-restore { background: var(--orange); }
@@ -43,10 +42,15 @@
 <body>
 
 <div class="container">
-    <h3 style="text-align:center; color:var(--red); margin-top:0;">DZ مؤقت الامتحانات 2026</h3>
+    <h3 style="text-align:center; color:var(--red); margin-top:0;">حاسبة المعدل - Houssem 🇩🇿</h3>
     <div class="exam-timer">
-        <div>BEM 2026<b id="bem-t">-- يوم</b></div>
-        <div>BAC 2026<b id="bac-t">-- يوم</b></div>
+        <span>المتبقي على بكالوريا 2026</span>
+        <div class="countdown-wrapper">
+            <div class="time-box"><b id="days">00</b><small>يوم</small></div>
+            <div class="time-box"><b id="hours">00</b><small>ساعة</small></div>
+            <div class="time-box"><b id="mins">00</b><small>دقيقة</small></div>
+            <div class="time-box"><b id="secs">00</b><small>ثانية</small></div>
+        </div>
     </div>
 
     <div class="selection-box">
@@ -62,6 +66,11 @@
         </div>
     </div>
 
+    <div class="stats-bar">
+        <span>عدد المواد الإجمالي:</span>
+        <span class="subjects-count" id="sub-count">0</span>
+    </div>
+
     <div class="extra-options">
         <label>الأمازيغية <input type="checkbox" id="amz" onchange="loadSubjects()"></label>
         <label id="art-label">التربية الفنية <input type="checkbox" id="art" onchange="loadSubjects()"></label>
@@ -75,37 +84,19 @@
             <tbody id="m-body"></tbody>
         </table>
     </div>
-    
     <div class="btn-group">
         <button class="btn btn-calc" onclick="calculate()">احسب المعدل النهائي 🚀</button>
-        <button class="btn btn-save" onclick="save()">حفظ البيانات ✅</button>
-        <button class="btn btn-restore" onclick="restore()">استرجاع البيانات 🔄</button>
+        <button class="btn btn-save" onclick="save()">حفظ ✅</button>
+        <button class="btn btn-restore" onclick="restore()">استرجاع 🔄</button>
     </div>
     <div id="result-card"></div>
 </div>
 
 <script>
     const data = {
-        "1": {
-            "جذع مشترك علوم وتكنولوجيا": [["رياضيات",5],["فيزياء",4],["علوم طبيعية",4],["لغة عربية",3],["لغة فرنسية",2],["لغة انجليزية",2],["اجتماعيات",2],["علوم إسلامية",2],["تكنولوجيا",2],["إعلام آلي",2],["تربية بدنية",1]],
-            "جذع مشترك آداب": [["لغة عربية",5],["فيزياء",2],["اجتماعيات",4],["لغة فرنسية",3],["لغة انجليزية",3],["علوم إسلامية",2],["رياضيات",2],["علوم طبيعية",2],["إعلام آلي",2],["تربية بدنية",1]]
-        },
-        "2": {
-            "علوم تجريبية": [["علوم طبيعية",6],["فيزياء",5],["رياضيات",5],["لغة عربية",3],["اجتماعيات",2],["علوم إسلامية",2],["فلسفة",2],["لغة فرنسية",2],["لغة انجليزية",2],["تربية بدنية",1]],
-            "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم طبيعية",2],["لغة عربية",3],["اجتماعيات",2],["علوم إسلامية",2],["فلسفة",2],["لغة فرنسية",2],["لغة انجليزية",2],["تربية بدنية",1]],
-            "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",5],["لغة عربية",3],["اجتماعيات",2],["علوم إسلامية",2],["فلسفة",2],["لغة فرنسية",2],["لغة انجليزية",2],["تربية بدنية",1]],
-            "تسيير واقتصاد": [["تسيير محاسبي",6],["اقتصاد",5],["رياضيات",5],["قانون",2],["لغة عربية",3],["اجتماعيات",4],["علوم إسلامية",2],["لغة فرنسية",2],["لغة انجليزية",2],["تربية بدنية",1]],
-            "آداب وفلسفة": [["فلسفة",5],["لغة عربية",5],["اجتماعيات",4],["لغة فرنسية",3],["لغة انجليزية",3],["علوم إسلامية",2],["رياضيات",2],["تربية بدنية",1]],
-            "لغات أجنبية": [["لغة عربية",4],["لغة فرنسية",4],["لغة انجليزية",4],["لغة أجنبية 3",4],["اجتماعيات",2],["علوم إسلامية",2],["فلسفة",2],["رياضيات",2],["تربية بدنية",1]]
-        },
-        "3": {
-            "علوم تجريبية": [["علوم طبيعية",6],["فيزياء",5],["رياضيات",5],["لغة عربية",3],["اجتماعيات",2],["علوم إسلامية",2],["فلسفة",2],["لغة فرنسية",2],["لغة انجليزية",2],["تربية بدنية",1]],
-            "آداب وفلسفة": [["فلسفة",6],["لغة عربية",6],["اجتماعيات",4],["لغة فرنسية",3],["لغة انجليزية",3],["علوم إسلامية",2],["رياضيات",2],["تربية بدنية",1]],
-            "لغات أجنبية": [["لغة عربية",5],["لغة فرنسية",4],["لغة انجليزية",4],["لغة أجنبية 3",4],["فلسفة",2],["اجتماعيات",2],["علوم إسلامية",2],["رياضيات",2],["تربية بدنية",1]],
-            "تسيير واقتصاد": [["تسيير محاسبي",6],["اقتصاد",5],["قانون",2],["رياضيات",5],["لغة عربية",3],["اجتماعيات",4],["علوم إسلامية",2],["لغة فرنسية",2],["لغة انجليزية",2],["تربية بدنية",1]],
-            "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",6],["لغة عربية",3],["اجتماعيات",2],["علوم إسلامية",2],["فلسفة",2],["لغة فرنسية",2],["لغة انجليزية",2],["تربية بدنية",1]],
-            "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم طبيعية",2],["لغة عربية",3],["اجتماعيات",2],["علوم إسلامية",2],["فلسفة",2],["لغة فرنسية",2],["لغة انجليزية",2],["تربية بدنية",1]]
-        }
+        "1": { "جذع مشترك علوم": [["رياضيات",5],["فيزياء",4],["علوم",4],["عربية",3],["فرنسية",2],["انجليزية",2],["اجتماعيات",2],["إسلامية",2],["تكنولوجيا",2],["إعلام آلي",2],["رياضة",1]], "جذع مشترك آداب": [["عربية",5],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["فيزياء",2],["علوم",2],["إعلام آلي",2],["رياضة",1]] },
+        "2": { "علوم تجريبية": [["علوم",6],["فيزياء",5],["رياضيات",5],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]], "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم",2],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]], "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",5],["عربية",3],["إسلامية",2],["اجتماعيات",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]], "تسيير واقتصاد": [["تسيير",6],["اقتصاد",5],["قانون",2],["رياضيات",5],["عربية",3],["اجتماعيات",4],["إسلامية",2],["رياضة",1]], "آداب وفلسفة": [["فلسفة",5],["عربية",5],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["رياضة",1]], "لغات أجنبية": [["عربية",4],["فرنسية",4],["انجليزية",4],["لغة 3",4],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["رياضيات",2],["رياضة",1]] },
+        "3": { "علوم تجريبية": [["علوم",6],["فيزياء",5],["رياضيات",5],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]], "آداب وفلسفة": [["فلسفة",6],["عربية",6],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["رياضة",1]], "لغات أجنبية": [["عربية",5],["فرنسية",4],["انجليزية",4],["لغة 3",4],["فلسفة",2],["اجتماعيات",2],["إسلامية",2],["رياضيات",2],["رياضة",1]], "تسيير واقتصاد": [["تسيير",6],["اقتصاد",5],["قانون",2],["رياضيات",5],["عربية",3],["اجتماعيات",4],["إسلامية",2],["رياضة",1]], "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",6],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]], "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم",2],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]] }
     };
 
     function updateStreams() {
@@ -127,12 +118,12 @@
         if (document.getElementById("amz").checked) subjects.push(["أمازيغية", 2]);
         if (lvl === "1" && document.getElementById("art").checked) subjects.push(["تربية فنية", 1]);
 
+        // تحديث عداد المواد
+        document.getElementById("sub-count").innerText = subjects.length;
+
         let html = "";
         subjects.forEach(s => {
-            html += `<tr data-coef="${s[1]}"><td>${s[0]}</td>
-                <td><input type="number" oninput="u(this)"></td><td><input type="number" oninput="u(this)"></td>
-                <td><input type="number" oninput="u(this)"></td><td><input type="number" oninput="u(this)"></td>
-                <td><input type="number" oninput="u(this)"></td><td>${s[1]}</td><td class="row-total">0.00</td></tr>`;
+            html += `<tr data-coef="${s[1]}"><td>${s[0]}</td><td><input type="number" oninput="u(this)"></td><td><input type="number" oninput="u(this)"></td><td><input type="number" oninput="u(this)"></td><td><input type="number" oninput="u(this)"></td><td><input type="number" oninput="u(this)"></td><td>${s[1]}</td><td class="row-total">0.00</td></tr>`;
         });
         document.getElementById("m-body").innerHTML = html;
     }
@@ -148,44 +139,38 @@
 
     function calculate() {
         let tP = 0, tC = 0;
-        document.querySelectorAll("#m-body tr").forEach(row => {
-            tP += parseFloat(row.querySelector('.row-total').innerText);
-            tC += parseFloat(row.dataset.coef);
-        });
-        let res = document.getElementById("result-card");
-        res.style.display = "block";
-        let final = tP/tC;
-        res.style.background = final>=10 ? "#2ecc71" : "#e74c3c";
-        res.innerText = isNaN(final) ? "أدخل النقاط أولاً" : "المعدل الفصلي: " + final.toFixed(2);
+        document.querySelectorAll("#m-body tr").forEach(row => { tP += parseFloat(row.querySelector('.row-total').innerText); tC += parseFloat(row.dataset.coef); });
+        let res = document.getElementById("result-card"); res.style.display = "block";
+        let final = tP/tC; res.style.background = final>=10 ? "#2ecc71" : "#e74c3c";
+        res.innerText = isNaN(final) ? "أدخل النقاط" : "المعدل: " + final.toFixed(2);
     }
 
     function save() {
-        let s = { lvl: document.getElementById("level").value, stm: document.getElementById("stream").value, amz: document.getElementById("amz").checked, art: document.getElementById("art").checked, scores: [] };
+        let s = { lvl: document.getElementById("level").value, stm: document.getElementById("stream").value, scores: [] };
         document.querySelectorAll("#m-body input").forEach(i => s.scores.push(i.value));
-        localStorage.setItem("HOUSSEM_FINAL_APP", JSON.stringify(s)); alert("تم الحفظ بنجاح ✅");
+        localStorage.setItem("H_BAC_DATA_V5", JSON.stringify(s)); alert("تم الحفظ ✅");
     }
 
     function restore() {
-        let d = JSON.parse(localStorage.getItem("HOUSSEM_FINAL_APP"));
-        if(!d) return alert("لا توجد بيانات محفوظة");
-        document.getElementById("level").value = d.lvl; updateStreams();
-        document.getElementById("stream").value = d.stm; 
-        document.getElementById("amz").checked = d.amz; document.getElementById("art").checked = d.art;
-        loadSubjects();
+        let d = JSON.parse(localStorage.getItem("H_BAC_DATA_V5")); if(!d) return alert("لا توجد بيانات");
+        document.getElementById("level").value = d.lvl; updateStreams(); document.getElementById("stream").value = d.stm; loadSubjects();
         setTimeout(() => { document.querySelectorAll("#m-body input").forEach((i, idx) => { i.value = d.scores[idx]; u(i); }); }, 150);
     }
 
-    function timer() {
+    function updateTimer() {
+        const target = new Date('June 7, 2026 08:00:00').getTime();
         const now = new Date().getTime();
-        const diffBAC = new Date('June 7, 2026').getTime() - now;
-        const diffBEM = new Date('June 1, 2026').getTime() - now;
-        document.getElementById("bac-t").innerText = Math.floor(diffBAC/(1000*60*60*24)) + " يوم";
-        document.getElementById("bem-t").innerText = Math.floor(diffBEM/(1000*60*60*24)) + " يوم";
+        const diff = target - now;
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        document.getElementById("days").innerText = d; document.getElementById("hours").innerText = h;
+        document.getElementById("mins").innerText = m; document.getElementById("secs").innerText = s;
     }
-    timer(); setInterval(timer, 86400000); updateStreams();
+    setInterval(updateTimer, 1000); updateTimer(); updateStreams();
 </script>
 </body>
 </html>
-
 
 
