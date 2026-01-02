@@ -3,29 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Houssem GPA Pro</title>
+    <title>Houssem GPA - Full Subjects</title>
     <style>
         :root { --blue: #002868; --red: #bf0a30; --green: #2ecc71; --orange: #f39c12; }
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        .container { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 600px; border-top: 6px solid var(--blue); margin-bottom: 15px; box-sizing: border-box; }
-        h2 { color: var(--red); text-align: center; font-size: 1.2em; margin-bottom: 15px; }
+        .container { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 650px; border-top: 6px solid var(--blue); margin-bottom: 15px; box-sizing: border-box; }
+        h2 { color: var(--red); text-align: center; font-size: 1.2em; margin: 10px 0; }
         
-        /* حل مشكلة الشاشة الصغيرة: السماح بالتمرير الجانبي للجدول فقط */
-        .table-wrapper { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid #eee; }
-        table { width: 100%; border-collapse: collapse; min-width: 450px; } /* يضمن عدم تداخل الأعمدة */
-        th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.85em; }
-        th { background: #f8f9fa; color: var(--blue); }
-        input { width: 40px; padding: 5px; border-radius: 4px; border: 1px solid #ccc; text-align: center; }
+        .timer-box { display: flex; justify-content: space-around; background: var(--blue); color: white; padding: 15px; border-radius: 10px; text-align: center; }
+        .timer-item b { display: block; color: #f1c40f; font-size: 1.1em; }
 
-        .timer-box { display: flex; justify-content: space-around; background: var(--blue); color: white; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.8em; }
-        .timer-box b { display: block; color: #f1c40f; font-size: 1.1em; }
+        .quick-fill-area { background: #eef2f7; padding: 12px; border-radius: 10px; margin-top: 15px; border: 1px dashed var(--blue); text-align: center; }
+        .fill-controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin-top: 8px; }
+        select, .q-input { padding: 8px; border-radius: 5px; border: 1px solid var(--blue); font-weight: bold; }
+        .btn-fill { background: var(--blue); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        .table-wrapper { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid #eee; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 550px; }
+        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.85em; }
+        th { background: #f8f9fa; color: var(--blue); }
+        
+        input[type="number"] { width: 45px; padding: 5px; border-radius: 4px; border: 1px solid #ccc; text-align: center; font-weight: bold; }
 
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
-        .btn { padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 0.95em; }
+        .btn { padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 1em; }
         .btn-calc { background: var(--red); grid-column: span 2; }
         .btn-save { background: var(--green); }
         .btn-restore { background: var(--orange); }
-        #result-card { margin-top: 15px; padding: 15px; border-radius: 10px; text-align: center; display: none; font-weight: bold; color: white; }
+        #result-card { margin-top: 15px; padding: 15px; border-radius: 10px; text-align: center; display: none; font-weight: bold; color: white; font-size: 1.3em; }
     </style>
 </head>
 <body>
@@ -33,13 +38,28 @@
 <div class="container">
     <h2>🇩🇿 مؤقت الامتحانات 2026</h2>
     <div class="timer-box">
-        <div>BEM 2026<b id="bem-c">--</b></div>
-        <div>BAC 2026<b id="bac-c">--</b></div>
+        <div class="timer-item"><h4>BEM 2026</h4><b id="bem-v">149 يوم</b></div>
+        <div class="timer-item"><h4>BAC 2026</h4><b id="bac-v">156 يوم</b></div>
+    </div>
+
+    <div class="quick-fill-area">
+        <strong>⚡ ملء عمود محدد:</strong>
+        <div class="fill-controls">
+            <select id="target-col">
+                <option value="0">تقويم</option>
+                <option value="1">تطبيقي</option>
+                <option value="2">فرض 1</option>
+                <option value="3">فرض 2</option>
+                <option value="4">اختبار</option>
+            </select>
+            <input type="number" id="q-val" class="q-input" min="0" max="20" placeholder="10">
+            <button class="btn-fill" onclick="fillSpecific()">تطبيق ✨</button>
+        </div>
     </div>
 </div>
 
 <div class="container">
-    <h2>📊 حاسب المعدل</h2>
+    <h2>📊 حاسبة المعدل </h2>
     <div class="table-wrapper">
         <table>
             <thead>
@@ -50,87 +70,78 @@
                     <th>فرض1</th>
                     <th>فرض2</th>
                     <th>اختبار</th>
+                    <th>معامل</th>
                 </tr>
             </thead>
             <tbody id="m-body">
-                <tr data-coef="3"><td>اللغة العربية</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">3</td></tr>
-                <tr data-coef="5"><td>الرياضيات</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">5</td></tr>
-                <tr data-coef="4"><td>الفيزياء</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">4</td></tr>
-                <tr data-coef="4"><td>العلوم</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">4</td></tr>
-                <tr data-coef="2"><td>الإنجليزية</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">2</td></tr>
-                <tr data-coef="2"><td>الفرنسية</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">2</td></tr>
-                <tr data-coef="2"><td>اجتماعيات</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">2</td></tr>
-                <tr data-coef="2"><td>إسلامية</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">2</td></tr>
-                <tr data-coef="2"><td>تيكنولوجيا</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">2</td></tr>
-                <tr data-coef="2"><td>اعلام الي</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">2</td></tr>
-                <tr data-coef="1"><td>تربية فنية</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">1</td></tr>
-                <tr data-coef="1"><td>رياضة</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td class="fixed-coef">1</td></tr>
+                <tr data-coef="3"><td>اللغة العربية</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>3</td></tr>
+                <tr data-coef="5"><td>الرياضيات</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>5</td></tr>
+                <tr data-coef="4"><td>الفيزياء</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>4</td></tr>
+                <tr data-coef="4"><td>العلوم</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>4</td></tr>
+                <tr data-coef="2"><td>الإنجليزية</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
+                <tr data-coef="2"><td>الفرنسية</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
+                <tr data-coef="2"><td>اجتماعيات</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
+                <tr data-coef="2"><td>إسلامية</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
+                <tr data-coef="2"><td>تكنولوجيا</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
+                <tr data-coef="2"><td>إعلام آلي</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>2</td></tr>
+                <tr data-coef="1"><td>تربية فنية</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>1</td></tr>
+                <tr data-coef="1"><td>رياضة</td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td><input type="number" oninput="v(this)"></td><td>1</td></tr>
             </tbody>
         </table>
     </div>
 
     <div class="btn-group">
-        <button class="btn btn-calc" onclick="doCalc()">احسب المعدل الآن 🚀</button>
-        <button class="btn btn-save" onclick="doSave()">حفظ النقاط ✅</button>
-        <button class="btn btn-restore" onclick="doRestore()">استرجاع النقاط 🔄</button>
+        <button class="btn btn-calc" onclick="calculate()">احسب المعدل الآن 🚀</button>
+        <button class="btn btn-save" onclick="save()">حفظ النقاط ✅</button>
+        <button class="btn btn-restore" onclick="restore()">استرجاع النقاط 🔄</button>
     </div>
     <div id="result-card"></div>
 </div>
 
 <script>
-    // العداد التنازلي
-    function timer() {
-        const now = new Date().getTime();
-        const dates = { bem: new Date('June 1, 2026').getTime(), bac: new Date('June 8, 2026').getTime() };
-        for(let k in dates) {
-            let d = dates[k] - now;
-            let days = Math.floor(d / (1000*60*60*24));
-            document.getElementById(k+'-c').innerText = days > 0 ? days + " يوم" : "بدأ";
-        }
-    }
-    setInterval(timer, 60000); timer();
+    function v(el) { if(el.value>20) el.value=20; if(el.value<0 && el.value!=="") el.value=0; }
 
-    // الحساب
-    function doCalc() {
-        let totalP = 0, totalC = 0;
+    function fillSpecific() {
+        let colIdx = document.getElementById("target-col").value;
+        let val = document.getElementById("q-val").value;
+        if(val==="" || val<0 || val>20) return alert("أدخل نقطة صحيحة");
         document.querySelectorAll("#m-body tr").forEach(row => {
-            let ins = row.querySelectorAll("input"), sum = 0, count = 0, c = parseFloat(row.dataset.c);
-            ins.forEach((input, i) => {
-                let v = parseFloat(input.value) || 0;
-                if(i < 4 && v > 0) { sum += v; count++; } // للمراقبة المستمرة
-            });
-            let cont = count > 0 ? (sum / count) : 0;
-            let ex = parseFloat(ins[4].value) || 0;
-            let avg = (cont + (ex * 2)) / 3;
-            totalP += (avg * c); totalC += c;
+            row.querySelectorAll("input")[colIdx].value = val;
         });
-        let final = totalP / totalC;
+    }
+
+    function calculate() {
+        let tP = 0, tC = 0;
+        document.querySelectorAll("#m-body tr").forEach(row => {
+            let ins = row.querySelectorAll("input"), c = parseFloat(row.dataset.coef);
+            let sC = 0, count = 0;
+            for(let i=0; i<4; i++) { 
+                let v = parseFloat(ins[i].value); 
+                if(!isNaN(v)) { sC += v; count++; } 
+            }
+            let avg = ((count>0 ? sC/count : 0) + (parseFloat(ins[4].value)||0)*2)/3;
+            tP += (avg * c); tC += c;
+        });
         let res = document.getElementById("result-card");
-        res.style.display = "block"; res.style.background = final >= 10 ? "#2ecc71" : "#e74c3c";
-        res.innerText = "المعدل الفصلي: " + final.toFixed(2);
+        res.style.display = "block";
+        let final = tP/tC;
+        res.style.background = final>=10 ? "#2ecc71":"#e74c3c";
+        res.innerText = isNaN(final) ? "أدخل النقاط أولاً" : "المعدل الفصلي: " + final.toFixed(2);
     }
 
-    // الحفظ والاسترجاع (مصلح)
-    function doSave() {
-        let data = [];
-        document.querySelectorAll("#m-body input").forEach(i => data.push(i.value));
-        localStorage.setItem("HOUSSEM_V4", JSON.stringify(data));
-        alert("تم الحفظ بنجاح! ✅");
+    function save() {
+        let s = []; document.querySelectorAll("#m-body input").forEach(i => s.push(i.value));
+        localStorage.setItem("HOUSSEM_V10", JSON.stringify(s)); alert("تم الحفظ ✅");
     }
 
-    function doRestore() {
-        let data = JSON.parse(localStorage.getItem("HOUSSEM_V4"));
-        if(!data) return alert("لا توجد بيانات!");
-        document.querySelectorAll("#m-body input").forEach((i, idx) => i.value = data[idx]);
-        alert("تم الاسترجاع! 🔄");
+    function restore() {
+        let d = JSON.parse(localStorage.getItem("HOUSSEM_V10"));
+        if(!d) return alert("لا يوجد محفوظات");
+        document.querySelectorAll("#m-body input").forEach((i, idx) => i.value = d[idx]); alert("تم الاسترجاع 🔄");
     }
 </script>
 </body>
 </html>
-
-
-
-
 
 
 
