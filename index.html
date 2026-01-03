@@ -3,176 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Houssem GPA - Pro</title>
+    <title>Houssem Pro - BAC 2026</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --blue: #002868; --red: #bf0a30; --green: #2ecc71; --orange: #f39c12; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        .container { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 800px; border-top: 6px solid var(--blue); margin-bottom: 15px; box-sizing: border-box; }
+        :root { --main: #0056b3; --accent: #007bff; --bg: #f4f7f6; --red: #bf0a30; --green: #2ecc71; --dark: #2c3e50; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
-        .exam-timer { background: var(--blue); padding: 15px; border-radius: 10px; color: white; margin-bottom: 15px; text-align: center; }
-        .countdown-wrapper { display: flex; justify-content: center; gap: 8px; direction: ltr; margin-top: 10px; }
-        .time-box { background: rgba(255,255,255,0.1); padding: 8px; border-radius: 6px; min-width: 50px; }
-        .time-box b { display: block; color: #f1c40f; font-size: 1.5em; }
-        .time-box small { font-size: 0.6em; color: #ddd; }
+        /* المؤقت التنازلي */
+        .timer-container { background: var(--dark); color: white; padding: 15px; text-align: center; border-radius: 15px; margin: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .timer-grid { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
+        .timer-unit { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; min-width: 60px; }
+        .timer-unit span { display: block; font-size: 1.5em; font-weight: bold; }
 
-        .selection-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #eef2f7; padding: 15px; border-radius: 10px; }
-        select { width: 100%; padding: 10px; border-radius: 6px; border: 2px solid var(--blue); font-weight: bold; background: white; }
-
-        /* شريط الإحصائيات */
-        .stats-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
-        .stat-item { background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 0.85em; }
-        .badge { background: var(--red); color: white; padding: 2px 10px; border-radius: 10px; }
-
-        .extra-options { display: flex; justify-content: center; gap: 20px; font-weight: bold; font-size: 0.9em; margin-bottom: 10px; }
-        .table-wrapper { width: 100%; overflow-x: auto; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.85em; }
-        th { background: #f8f9fa; color: var(--blue); }
-        input[type="number"] { width: 45px; padding: 5px; border-radius: 4px; border: 1px solid #ccc; text-align: center; font-weight: bold; }
-        .row-total { font-weight: bold; color: var(--red); background: #fff5f5; }
-
+        .app-screen { display: none; padding: 15px; animation: fadeIn 0.4s; }
+        #main-menu { display: flex; flex-direction: column; align-items: center; }
+        
+        .menu-item { background: white; padding: 18px; border-radius: 12px; border-right: 6px solid var(--accent); display: flex; align-items: center; gap: 15px; cursor: pointer; width: 100%; max-width: 400px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        .container { background: white; padding: 20px; border-radius: 15px; max-width: 900px; margin: auto; border-top: 6px solid var(--main); }
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .btn { padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.3s; }
+        .btn { padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; }
         .btn-calc { background: var(--red); grid-column: span 2; }
         .btn-save { background: var(--green); }
-        .btn-restore { background: var(--orange); }
-        #result-card { margin-top: 15px; padding: 15px; border-radius: 10px; text-align: center; display: none; font-weight: bold; color: white; font-size: 1.5em; }
+        .btn-restore { background: #f39c12; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.9em; }
+        input { width: 45px; padding: 5px; text-align: center; border-radius: 4px; border: 1px solid #ccc; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h3 style="text-align:center; color:var(--red); margin-top:0;">حاسب_المعدل_الدقيق</h3>
-    <div class="exam-timer">
-        <span>المتبقي على بكالوريا 2026</span>
-        <div class="countdown-wrapper">
-            <div class="time-box"><b id="days">00</b><small>يوم</small></div>
-            <div class="time-box"><b id="hours">00</b><small>ساعة</small></div>
-            <div class="time-box"><b id="mins">00</b><small>دقيقة</small></div>
-            <div class="time-box"><b id="secs">00</b><small>ثانية</small></div>
+    <div id="main-menu" class="app-screen" style="display: flex;">
+        <div class="timer-container">
+            <h3>⏳ موعد بكالوريا 2026</h3>
+            <div class="timer-grid" id="timer">
+                <div class="timer-unit"><span id="days">00</span>يوم</div>
+                <div class="timer-unit"><span id="hours">00</span>ساعة</div>
+                <div class="timer-unit"><span id="mins">00</span>دقيقة</div>
+            </div>
         </div>
+
+        <div class="menu-item" onclick="showPage('gpa-page')"><i class="fas fa-calculator"></i><span>حساب المعدل الفصلي</span></div>
+        <div class="menu-item" onclick="showPage('bac-page')"><i class="fas fa-user-graduate"></i><span>حساب معدل البكالوريا</span></div>
+        <div class="menu-item" onclick="showPage('apps-page')"><i class="fas fa-mobile-alt"></i><span>تطبيقاتنا</span></div>
     </div>
 
-    <div class="selection-box">
-        <div><label>المستوى:</label>
-            <select id="level" onchange="updateStreams()">
-                <option value="1">1 ثانوي</option>
-                <option value="2">2 ثانوي</option>
-                <option value="3">3 ثانوي</option>
+    <div id="gpa-page" class="app-screen">
+        <div onclick="showPage('main-menu')" style="cursor:pointer; font-weight:bold; margin-bottom:10px;">⬅ عودة</div>
+        <div class="container">
+            <select id="lvl" onchange="updateStreams()" style="width:100%; padding:10px; margin-bottom:10px;">
+                <option value="1">1 ثانوي</option><option value="2">2 ثانوي</option><option value="3">3 ثانوي</option>
             </select>
+            <select id="strm" onchange="loadTable()" style="width:100%; padding:10px; margin-bottom:10px;"></select>
+            
+            <div style="font-size: 0.8em; margin-bottom:10px; background:#eef2f7; padding:10px; border-radius:8px;">
+                الأمازيغية (اختياري) <input type="checkbox" id="tam" onchange="loadTable()"> | 
+                الفنية  <input type="checkbox" id="art" onchange="loadTable()">
+            </div>
+
+            <table>
+                <thead><tr><th>المادة</th><th>تقويم</th><th>فرض</th><th>اختبار</th><th>معامل</th><th>المجموع</th></tr></thead>
+                <tbody id="gpa-body"></tbody>
+            </table>
+
+            <div class="btn-group">
+                <button class="btn btn-calc" onclick="calcGPA()">احسب المعدل</button>
+                <button class="btn btn-save" onclick="saveData()">حفظ</button>
+                <button class="btn btn-restore" onclick="restoreData()">استرجاع</button>
+            </div>
+            <h2 id="final-res" style="text-align:center;"></h2>
         </div>
-        <div><label>الشعبة:</label>
-            <select id="stream" onchange="loadSubjects()"></select>
+    </div>
+
+    <div id="bac-page" class="app-screen">
+        <div onclick="showPage('main-menu')" style="cursor:pointer; font-weight:bold; margin-bottom:10px;">⬅ عودة</div>
+        <div class="container">
+            <h3>🎓 حساب معدل البكالوريا</h3>
+            <select id="bac-strm" onchange="loadBacTable()" style="width:100%; padding:10px; margin-bottom:10px;"></select>
+            <table>
+                <thead><tr><th>المادة</th><th>العلامة</th><th>المعامل</th></tr></thead>
+                <tbody id="bac-body"></tbody>
+            </table>
+            <button class="btn btn-calc" onclick="calcBac()" style="margin-top:15px;">احسب النتيجة النهائية</button>
         </div>
     </div>
 
-    <div class="stats-bar">
-        <div class="stat-item">المواد: <span class="badge" id="sub-count">0</span></div>
-        <div class="stat-item">المعاملات: <span class="badge" id="coef-count">0</span></div>
+    <div id="apps-page" class="app-screen">
+        <div onclick="showPage('main-menu')" style="cursor:pointer; font-weight:bold; margin-bottom:10px;">⬅ عودة</div>
+        <div class="container"><h3>تطبيقات Houssem</h3><p>قريباً: بنك الفروض والاختبارات</p></div>
     </div>
-
-    <div class="extra-options">
-        <label>الأمازيغية <input type="checkbox" id="amz" onchange="loadSubjects()"></label>
-        <label id="art-label">التربية الفنية <input type="checkbox" id="art" onchange="loadSubjects()"></label>
-    </div>
-</div>
-
-<div class="container">
-    <div class="table-wrapper">
-        <table>
-            <thead><tr><th>المادة</th><th>تقويم</th><th>ا.تطبيقية</th><th>فرض1</th><th>فرض2</th><th>اختبار</th><th>معامل</th><th>المجموع</th></tr></thead>
-            <tbody id="m-body"></tbody>
-        </table>
-    </div>
-    <div class="btn-group">
-        <button class="btn btn-calc" onclick="calculate()">احسب المعدل النهائي 🚀</button>
-        <button class="btn btn-save" onclick="save()">حفظ البيانات ✅</button>
-        <button class="btn btn-restore" onclick="restore()">استرجاع 🔄</button>
-    </div>
-    <div id="result-card"></div>
-</div>
 
 <script>
-    const data = {
-        "1": { "جذع مشترك علوم": [["رياضيات",5],["فيزياء",4],["علوم",4],["عربية",3],["فرنسية",2],["انجليزية",2],["اجتماعيات",2],["إسلامية",2],["تكنولوجيا",2],["إعلام آلي",2],["رياضة",1]], "جذع مشترك آداب": [["عربية",5],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["علوم",2],["إعلام آلي",2],["رياضة",1]] },
+    // قاعدة البيانات الكاملة لجميع الشعب
+    const db = {
+        "1": { "جذع علوم": [["رياضيات",5],["فيزياء",4],["علوم",4],["عربية",3],["فرنسية",2],["انجليزية",2],["اجتماعيات",2],["إسلامية",2],["تكنولوجيا",2],["إعلام آلي",2],["رياضة",1]], "جذع آداب": [["عربية",5],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["فيزياء",2],["علوم",2],["إعلام آلي",2],["رياضة",1]] },
         "2": { "علوم تجريبية": [["علوم",6],["فيزياء",5],["رياضيات",5],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]], "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم",2],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]], "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",5],["عربية",3],["إسلامية",2],["اجتماعيات",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]], "تسيير واقتصاد": [["تسيير",6],["اقتصاد",5],["قانون",2],["رياضيات",5],["عربية",3],["اجتماعيات",4],["إسلامية",2],["رياضة",1]], "آداب وفلسفة": [["فلسفة",5],["عربية",5],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["رياضة",1]], "لغات أجنبية": [["عربية",4],["فرنسية",4],["انجليزية",4],["لغة 3",4],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["رياضيات",2],["رياضة",1]] },
-        "3": { "علوم تجريبية": [["علوم",6],["فيزياء",5],["رياضيات",5],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]], "آداب وفلسفة": [["فلسفة",6],["عربية",6],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["رياضة",1]], "لغات أجنبية": [["عربية",5],["فرنسية",4],["انجليزية",4],["لغة 3",4],["فلسفة",2],["اجتماعيات",2],["إسلامية",2],["رياضيات",2],["رياضة",1]], "تسيير واقتصاد": [["تسيير",6],["اقتصاد",5],["قانون",2],["رياضيات",5],["عربية",3],["اجتماعيات",4],["إسلامية",2],["رياضة",1]], "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",6],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]], "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم",2],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]] }
+        "3": { 
+            "علوم تجريبية": [["علوم",6],["فيزياء",5],["رياضيات",5],["عربية",3],["فلسفة",2],["اجتماعيات",2],["إسلامية",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم",2],["عربية",3],["فلسفة",2],["اجتماعيات",2],["إسلامية",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",6],["عربية",3],["فلسفة",2],["اجتماعيات",2],["إسلامية",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "تسيير واقتصاد": [["تسيير",6],["اقتصاد",5],["قانون",2],["رياضيات",5],["اجتماعيات",4],["عربية",3],["فرنسية",2],["انجليزية",2],["فلسفة",2],["رياضة",1]],
+            "لغات أجنبية": [["لغة 3",4],["فرنسية",4],["انجليزية",4],["عربية",5],["اجتماعيات",2],["فلسفة",2],["رياضيات",2],["رياضة",1]],
+            "آداب وفلسفة": [["فلسفة",6],["عربية",6],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["رياضة",1]]
+        }
     };
 
+    // المؤقت التنازلي
+    function startTimer() {
+        const bacDate = new Date("June 10, 2026 08:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const diff = bacDate - now;
+            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('mins').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        }, 1000);
+    }
+    startTimer();
+
+    function showPage(id) {
+        document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = id === 'main-menu' ? 'flex' : 'block';
+        if(id === 'gpa-page') updateStreams();
+        if(id === 'bac-page') loadBacStreams();
+    }
+
     function updateStreams() {
-        const lvl = document.getElementById("level").value;
-        const sSelect = document.getElementById("stream");
-        document.getElementById("art-label").style.display = (lvl === "1") ? "inline-flex" : "none";
-        sSelect.innerHTML = "";
-        for (let s in data[lvl]) {
-            let opt = document.createElement("option"); opt.value = s; opt.innerText = s;
-            sSelect.appendChild(opt);
-        }
-        loadSubjects();
+        const l = document.getElementById('lvl').value, s = document.getElementById('strm');
+        s.innerHTML = "";
+        for (let x in db[l]) s.innerHTML += `<option value="${x}">${x}</option>`;
+        loadTable();
     }
 
-    function loadSubjects() {
-        const lvl = document.getElementById("level").value, stm = document.getElementById("stream").value;
-        if (!data[lvl][stm]) return;
-        let subjects = [...data[lvl][stm]];
-        if (document.getElementById("amz").checked) subjects.push(["أمازيغية", 2]);
-        if (lvl === "1" && document.getElementById("art").checked) subjects.push(["تربية فنية", 1]);
-
-        let totalCoef = 0;
-        subjects.forEach(s => totalCoef += s[1]);
-        document.getElementById("sub-count").innerText = subjects.length;
-        document.getElementById("coef-count").innerText = totalCoef;
-
-        let html = "";
-        subjects.forEach(s => {
-            html += `<tr data-coef="${s[1]}"><td>${s[0]}</td><td><input type="number" oninput="u(this)"></td><td><input type="number" oninput="u(this)"></td><td><input type="number" oninput="u(this)"></td><td><input type="number" oninput="u(this)"></td><td><input type="number" oninput="u(this)"></td><td>${s[1]}</td><td class="row-total">0.00</td></tr>`;
+    function loadTable() {
+        const l = document.getElementById('lvl').value, st = document.getElementById('strm').value;
+        let subs = [...db[l][st]];
+        if(document.getElementById('tam').checked) subs.push(["أمازيغية", 2]);
+        if(l === "1" && document.getElementById('art').checked) subs.push(["تربية فنية", 1]);
+        
+        let h = "";
+        subs.forEach(s => {
+            h += `<tr data-c="${s[1]}"><td>${s[0]}</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td>${s[1]}</td><td class="rt">0</td></tr>`;
         });
-        document.getElementById("m-body").innerHTML = html;
+        document.getElementById('gpa-body').innerHTML = h;
     }
 
-    function u(el) {
-        if(el.value>20) el.value=20; if(el.value<0) el.value=0;
-        const row = el.closest('tr'), ins = row.querySelectorAll('input'), coef = parseFloat(row.dataset.coef);
-        let sc = 0, count = 0;
-        for(let i=0; i<4; i++) { let v = parseFloat(ins[i].value); if(!isNaN(v)) { sc += v; count++; } }
-        let avg = ((count>0 ? sc/count : 0) + (parseFloat(ins[4].value)||0)*2)/3;
-        row.querySelector('.row-total').innerText = (avg * coef).toFixed(2);
-    }
-
-    function calculate() {
+    function calcGPA() {
         let tP = 0, tC = 0;
-        document.querySelectorAll("#m-body tr").forEach(row => { tP += parseFloat(row.querySelector('.row-total').innerText); tC += parseFloat(row.dataset.coef); });
-        let res = document.getElementById("result-card"); res.style.display = "block";
-        let final = tP/tC; res.style.background = final>=10 ? "#2ecc71" : "#e74c3c";
-        res.innerText = isNaN(final) ? "أدخل النقاط" : "المعدل الفصلي: " + final.toFixed(2);
+        document.querySelectorAll("#gpa-body tr").forEach(r => {
+            const ins = r.querySelectorAll('input'), c = parseFloat(r.dataset.c);
+            let avg = ((parseFloat(ins[0].value)||0) + (parseFloat(ins[1].value)||0) + (parseFloat(ins[2].value)||0)*2)/4;
+            r.querySelector('.rt').innerText = (avg * c).toFixed(2);
+            tP += avg * c; tC += c;
+        });
+        document.getElementById('final-res').innerText = "المعدل: " + (tP/tC).toFixed(2);
     }
 
-    function save() {
-        let s = { lvl: document.getElementById("level").value, stm: document.getElementById("stream").value, amz: document.getElementById("amz").checked, art: document.getElementById("art").checked, scores: [] };
-        document.querySelectorAll("#m-body input").forEach(i => s.scores.push(i.value));
-        localStorage.setItem("H_BAC_V6", JSON.stringify(s)); alert("تم الحفظ ✅");
+    function loadBacStreams() {
+        const s = document.getElementById('bac-strm'); s.innerHTML = "";
+        for (let x in db["3"]) s.innerHTML += `<option value="${x}">${x}</option>`;
+        loadBacTable();
     }
 
-    function restore() {
-        let d = JSON.parse(localStorage.getItem("H_BAC_V6")); if(!d) return alert("لا توجد بيانات");
-        document.getElementById("level").value = d.lvl; updateStreams(); document.getElementById("stream").value = d.stm; 
-        document.getElementById("amz").checked = d.amz; document.getElementById("art").checked = d.art;
-        loadSubjects();
-        setTimeout(() => { document.querySelectorAll("#m-body input").forEach((i, idx) => { i.value = d.scores[idx]; u(i); }); }, 150);
+    function loadBacTable() {
+        const st = document.getElementById('bac-strm').value;
+        let h = "";
+        db["3"][st].forEach(s => {
+            h += `<tr data-c="${s[1]}"><td>${s[0]}</td><td><input type="number" style="width:60px"></td><td>${s[1]}</td></tr>`;
+        });
+        document.getElementById('bac-body').innerHTML = h;
     }
 
-    function updateTimer() {
-        const target = new Date('June 7, 2026 08:00:00').getTime();
-        const now = new Date().getTime();
-        const diff = target - now;
-        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diff % (1000 * 60)) / 1000);
-        document.getElementById("days").innerText = d; document.getElementById("hours").innerText = h;
-        document.getElementById("mins").innerText = m; document.getElementById("secs").innerText = s;
+    function calcBac() {
+        let tP = 0, tC = 0;
+        document.querySelectorAll("#bac-body tr").forEach(r => {
+            let v = parseFloat(r.querySelector('input').value)||0, c = parseFloat(r.dataset.c);
+            tP += v * c; tC += c;
+        });
+        alert("معدل البكالوريا المتوقع: " + (tP/tC).toFixed(2));
     }
-    setInterval(updateTimer, 1000); updateTimer(); updateStreams();
+
+    function saveData() {
+        const vals = []; document.querySelectorAll("#gpa-body input").forEach(i => vals.push(i.value));
+        localStorage.setItem('saved_grades', JSON.stringify(vals));
+        alert("تم الحفظ!");
+    }
+
+    function restoreData() {
+        const vals = JSON.parse(localStorage.getItem('saved_grades'));
+        if(vals) document.querySelectorAll("#gpa-body input").forEach((i, idx) => i.value = vals[idx]);
+    }
 </script>
 </body>
 </html>
