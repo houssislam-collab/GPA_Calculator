@@ -64,10 +64,21 @@
                 الفنية  <input type="checkbox" id="art" onchange="loadTable()">
             </div>
 
-            <table>
-                <thead><tr><th>المادة</th><th>تقويم</th><th>فرض</th><th>اختبار</th><th>معامل</th><th>المجموع</th></tr></thead>
-                <tbody id="gpa-body"></tbody>
-            </table>
+          <table>
+    <thead>
+        <tr>
+            <th style="width: 25%;">المادة</th>
+            <th>تقويم</th>
+            <th>فرض</th>
+            <th>اختبار</th>
+            <th>معامل</th>
+            <th>المجموع</th>
+        </tr>
+    </thead>
+    <tbody id="subjectsBody">
+        </tbody>
+</table>
+
 
             <div class="btn-group">
                 <button class="btn btn-calc" onclick="calcGPA()">احسب المعدل</button>
@@ -199,4 +210,5 @@
 </script>
 </body>
 </html>
+
 
