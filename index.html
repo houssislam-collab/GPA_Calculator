@@ -8,8 +8,7 @@
     <style>
         :root { --main: #0056b3; --accent: #007bff; --bg: #f4f7f6; --red: #bf0a30; --green: #2ecc71; --dark: #2c3e50; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
-        
-        /* المؤقت التنازلي */
+       
         .timer-container { background: var(--dark); color: white; padding: 15px; text-align: center; border-radius: 15px; margin: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .timer-grid { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
         .timer-unit { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; min-width: 60px; }
@@ -17,9 +16,9 @@
 
         .app-screen { display: none; padding: 15px; animation: fadeIn 0.4s; }
         #main-menu { display: flex; flex-direction: column; align-items: center; }
-        
+       
         .menu-item { background: white; padding: 18px; border-radius: 12px; border-right: 6px solid var(--accent); display: flex; align-items: center; gap: 15px; cursor: pointer; width: 100%; max-width: 400px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        
+       
         .container { background: white; padding: 20px; border-radius: 15px; max-width: 900px; margin: auto; border-top: 6px solid var(--main); }
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .btn { padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; }
@@ -27,26 +26,31 @@
         .btn-save { background: var(--green); }
         .btn-restore { background: #f39c12; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.9em; }
-        input { width: 45px; padding: 5px; text-align: center; border-radius: 4px; border: 1px solid #ccc; }
-        
+        /* حل مشكلة خروج الجدول */
+        .table-wrapper { width: 100%; overflow-x: auto; margin-top: 10px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 450px; }
+        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; font-size: 0.9em; }
+        input { width: 50px; padding: 5px; text-align: center; border-radius: 4px; border: 1px solid #ccc; }
+       
+        .res-box { display: flex; justify-content: space-around; background: #eef2f7; padding: 15px; border-radius: 10px; margin-top: 15px; display: none; }
+        .res-item { text-align: center; font-size: 0.9em; }
+        .res-item span { display: block; font-weight: bold; color: var(--main); font-size: 1.3em; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div id="main-menu" class="app-screen" style="display: flex;">
-		<h3>𝐃𝐞𝐬𝐢𝐠𝐧𝐞𝐝 𝐛𝐲 𝐇𝐌𝐃</h3>
+        <h3>𝐃𝐞𝐬𝐢𝐠𝐧𝐞𝐝 𝐛𝐲 𝐇𝐌𝐃</h3>
         <div class="timer-container">
             <h3>⏳ موعد بكالوريا 2026</h3>
-            <div class="timer-grid" id="timer">
+            <div class="timer-grid">
                 <div class="timer-unit"><span id="days">00</span>يوم</div>
                 <div class="timer-unit"><span id="hours">00</span>ساعة</div>
                 <div class="timer-unit"><span id="mins">00</span>دقيقة</div>
             </div>
         </div>
-
         <div class="menu-item" onclick="showPage('gpa-page')"><i class="fas fa-calculator"></i><span>حساب المعدل الفصلي</span></div>
         <div class="menu-item" onclick="showPage('bac-page')"><i class="fas fa-user-graduate"></i><span>حساب معدل البكالوريا</span></div>
         <div class="menu-item" onclick="showPage('apps-page')"><i class="fas fa-mobile-alt"></i><span>تطبيقاتنا</span></div>
@@ -56,26 +60,30 @@
         <div onclick="showPage('main-menu')" style="cursor:pointer; font-weight:bold; margin-bottom:10px;">⬅ عودة</div>
         <div class="container">
             <select id="lvl" onchange="updateStreams()" style="width:100%; padding:10px; margin-bottom:10px;">
-                <option value="1">1 ثانوي</option><option value="2">2 ثانوي</option><option value="3">3 ثانوي</option>
+                <option value="1">1 ثانوي</option>
+                <option value="2">2 ثانوي</option>
+                <option value="3">3 ثانوي</option>
             </select>
             <select id="strm" onchange="loadTable()" style="width:100%; padding:10px; margin-bottom:10px;"></select>
-            
-            <div style="font-size: 0.8em; margin-bottom:10px; background:#eef2f7; padding:10px; border-radius:8px;">
-                الأمازيغية (اختياري) <input type="checkbox" id="tam" onchange="loadTable()"> | 
-                الفنية (1ث فقط) <input type="checkbox" id="art" onchange="loadTable()">
+           
+            <div style="font-size: 0.85em; margin-bottom:10px; background:#eef2f7; padding:10px; border-radius:8px; display: flex; gap: 15px; justify-content: center;">
+                <label>الأمازيغية <input type="checkbox" id="tam" onchange="loadTable()"></label>
+                <label id="art-label">الفنية <input type="checkbox" id="art" onchange="loadTable()"></label>
             </div>
 
-            <table>
-                <thead><tr><th>المادة</th><th>تقويم</th><th>فرض</th><th>اختبار</th><th>معامل</th><th>المجموع</th></tr></thead>
-                <tbody id="gpa-body"></tbody>
-            </table>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>المادة</th><th>تقويم</th><th>فرض</th><th>اختبار</th><th>معامل</th><th>المجموع</th></tr></thead>
+                    <tbody id="gpa-body"></tbody>
+                </table>
+            </div>
 
             <div class="btn-group">
                 <button class="btn btn-calc" onclick="calcGPA()">احسب المعدل</button>
                 <button class="btn btn-save" onclick="saveData()">حفظ</button>
                 <button class="btn btn-restore" onclick="restoreData()">استرجاع</button>
             </div>
-            <h2 id="final-res" style="text-align:center;"></h2>
+            <h2 id="final-res" style="text-align:center; color: var(--red);"></h2>
         </div>
     </div>
 
@@ -84,10 +92,20 @@
         <div class="container">
             <h3>🎓 حساب معدل البكالوريا</h3>
             <select id="bac-strm" onchange="loadBacTable()" style="width:100%; padding:10px; margin-bottom:10px;"></select>
-            <table>
-                <thead><tr><th>المادة</th><th>العلامة</th><th>المعامل</th></tr></thead>
-                <tbody id="bac-body"></tbody>
-            </table>
+            <div style="font-size: 0.85em; margin-bottom:10px; background:#eef2f7; padding:10px; border-radius:8px; text-align:center;">
+                <label>الأمازيغية (اختياري) <input type="checkbox" id="tam-bac" onchange="loadBacTable()"></label>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>المادة</th><th>العلامة</th><th>المعامل</th><th>المجموع</th></tr></thead>
+                    <tbody id="bac-body"></tbody>
+                </table>
+            </div>
+            <div id="bac-res-box" class="res-box">
+                <div class="res-item">المجموع<span id="res-pts">0</span></div>
+                <div class="res-item">المعاملات<span id="res-coef">0</span></div>
+                <div class="res-item">المعدل<span id="res-avg">0.00</span></div>
+            </div>
             <button class="btn btn-calc" onclick="calcBac()" style="margin-top:15px;">احسب النتيجة النهائية</button>
         </div>
     </div>
@@ -98,18 +116,17 @@
     </div>
 
 <script>
-    // قاعدة البيانات الكاملة لجميع الشعب
     const db = {
         "1": { "جذع علوم": [["رياضيات",5],["فيزياء",4],["علوم",4],["عربية",3],["فرنسية",2],["انجليزية",2],["اجتماعيات",2],["إسلامية",2],["تكنولوجيا",2],["إعلام آلي",2],["رياضة",1]], "جذع آداب": [["عربية",5],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["علوم",2],["إعلام آلي",2],["رياضة",1]] },
- "2": { 
-        "علوم تجريبية": [["علوم",6],["فيزياء",5],["رياضيات",5],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
-        "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم",2],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
-        "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",5],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
-        "تسيير واقتصاد": [["تسيير",6],["اقتصاد",5],["قانون",2],["رياضيات",5],["عربية",3],["اجتماعيات",4],["إسلامية",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
-        "آداب وفلسفة": [["فلسفة",5],["عربية",5],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["رياضة",1]],
-        "لغات أجنبية": [["عربية",4],["فرنسية",4],["انجليزية",4],["لغة 3",4],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["رياضيات",2],["رياضة",1]]
-    },
-	"3": { 
+        "2": {
+            "علوم تجريبية": [["علوم",6],["فيزياء",5],["رياضيات",5],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم",2],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",5],["عربية",3],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "تسيير واقتصاد": [["تسيير",6],["اقتصاد",5],["قانون",2],["رياضيات",5],["عربية",3],["اجتماعيات",4],["إسلامية",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
+            "آداب وفلسفة": [["فلسفة",5],["عربية",5],["اجتماعيات",4],["فرنسية",3],["انجليزية",3],["إسلامية",2],["رياضيات",2],["رياضة",1]],
+            "لغات أجنبية": [["عربية",4],["فرنسية",4],["انجليزية",4],["لغة 3",4],["اجتماعيات",2],["إسلامية",2],["فلسفة",2],["رياضيات",2],["رياضة",1]]
+        },
+        "3": {
             "علوم تجريبية": [["علوم",6],["فيزياء",5],["رياضيات",5],["عربية",3],["فلسفة",2],["اجتماعيات",2],["إسلامية",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
             "رياضيات": [["رياضيات",7],["فيزياء",6],["علوم",2],["عربية",3],["فلسفة",2],["اجتماعيات",2],["إسلامية",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
             "تقني رياضي": [["تكنولوجيا",7],["رياضيات",6],["فيزياء",6],["عربية",3],["فلسفة",2],["اجتماعيات",2],["إسلامية",2],["فرنسية",2],["انجليزية",2],["رياضة",1]],
@@ -119,39 +136,42 @@
         }
     };
 
-    // المؤقت التنازلي
     function startTimer() {
-        const bacDate = new Date("June 10, 2026 08:00:00").getTime();
+        const target = new Date("June 10, 2026 08:00:00").getTime();
         setInterval(() => {
             const now = new Date().getTime();
-            const diff = bacDate - now;
-            document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById('mins').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const diff = target - now;
+            document.getElementById('days').innerText = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+            document.getElementById('hours').innerText = Math.max(0, Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+            document.getElementById('mins').innerText = Math.max(0, Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)));
         }, 1000);
     }
     startTimer();
 
     function showPage(id) {
         document.querySelectorAll('.app-screen').forEach(s => s.style.display = 'none');
-        document.getElementById(id).style.display = id === 'main-menu' ? 'flex' : 'block';
+        const target = document.getElementById(id);
+        target.style.display = (id === 'main-menu') ? 'flex' : 'block';
         if(id === 'gpa-page') updateStreams();
         if(id === 'bac-page') loadBacStreams();
     }
 
     function updateStreams() {
-        const l = document.getElementById('lvl').value, s = document.getElementById('strm');
+        const l = document.getElementById('lvl').value;
+        const s = document.getElementById('strm');
         s.innerHTML = "";
         for (let x in db[l]) s.innerHTML += `<option value="${x}">${x}</option>`;
+        document.getElementById('art-label').style.display = (l === "1") ? "inline" : "none";
         loadTable();
     }
 
     function loadTable() {
-        const l = document.getElementById('lvl').value, st = document.getElementById('strm').value;
+        const l = document.getElementById('lvl').value;
+        const st = document.getElementById('strm').value;
         let subs = [...db[l][st]];
         if(document.getElementById('tam').checked) subs.push(["أمازيغية", 2]);
         if(l === "1" && document.getElementById('art').checked) subs.push(["تربية فنية", 1]);
-        
+       
         let h = "";
         subs.forEach(s => {
             h += `<tr data-c="${s[1]}"><td>${s[0]}</td><td><input type="number"></td><td><input type="number"></td><td><input type="number"></td><td>${s[1]}</td><td class="rt">0</td></tr>`;
@@ -171,7 +191,8 @@
     }
 
     function loadBacStreams() {
-        const s = document.getElementById('bac-strm'); s.innerHTML = "";
+        const s = document.getElementById('bac-strm');
+        s.innerHTML = "";
         for (let x in db["3"]) s.innerHTML += `<option value="${x}">${x}</option>`;
         loadBacTable();
     }
@@ -179,32 +200,51 @@
     function loadBacTable() {
         const st = document.getElementById('bac-strm').value;
         let h = "";
-        db["3"][st].forEach(s => {
-            h += `<tr data-c="${s[1]}"><td>${s[0]}</td><td><input type="number" style="width:60px"></td><td>${s[1]}</td></tr>`;
+        let subs = [...db["3"][st]];
+        if(document.getElementById('tam-bac').checked) subs.push(["أمازيغية", 2]);
+        
+        subs.forEach(s => {
+            h += `<tr data-c="${s[1]}"><td>${s[0]}</td><td><input type="number" style="width:65px"></td><td>${s[1]}</td><td class="b-sum">0</td></tr>`;
         });
         document.getElementById('bac-body').innerHTML = h;
+        document.getElementById('bac-res-box').style.display = 'none';
     }
 
     function calcBac() {
         let tP = 0, tC = 0;
         document.querySelectorAll("#bac-body tr").forEach(r => {
             let v = parseFloat(r.querySelector('input').value)||0, c = parseFloat(r.dataset.c);
-            tP += v * c; tC += c;
+            let name = r.cells[0].innerText;
+            if (name === "أمازيغية" || name === "تربية فنية") {
+                let extra = v > 10 ? (v - 10) : 0;
+                r.querySelector('.b-sum').innerText = "+" + extra;
+                tP += extra;
+            } else {
+                r.querySelector('.b-sum').innerText = (v * c).toFixed(2);
+                tP += v * c; tC += c;
+            }
         });
-        alert("معدل البكالوريا المتوقع: " + (tP/tC).toFixed(2));
+        document.getElementById('res-pts').innerText = tP.toFixed(2);
+        document.getElementById('res-coef').innerText = tC;
+        document.getElementById('res-avg').innerText = (tP/tC).toFixed(2);
+        document.getElementById('bac-res-box').style.display = 'flex';
     }
 
     function saveData() {
         const vals = []; document.querySelectorAll("#gpa-body input").forEach(i => vals.push(i.value));
         localStorage.setItem('saved_grades', JSON.stringify(vals));
-        alert("تم الحفظ!");
+        alert("تم حفظ البيانات بنجاح!");
     }
 
     function restoreData() {
         const vals = JSON.parse(localStorage.getItem('saved_grades'));
-        if(vals) document.querySelectorAll("#gpa-body input").forEach((i, idx) => i.value = vals[idx]);
+        if(vals) {
+            document.querySelectorAll("#gpa-body input").forEach((i, idx) => i.value = vals[idx]);
+            alert("تم استرجاع البيانات!");
+        } else {
+            alert("لا توجد بيانات محفوظة.");
+        }
     }
 </script>
 </body>
 </html>
-
