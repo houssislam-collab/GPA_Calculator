@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.houssislam_collab.twa",
+        "sha256_cert_fingerprints": ["7E:0D:14:83:E5:E1:89:0F:FF:66:5A:7C:76:A7:E2:D1:8A:50:8D:DE:AB:8C:4B:25:47:8F:6F:91:F8:82:72:FD"]
+      }
+    }]
