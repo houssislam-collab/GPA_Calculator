@@ -1125,69 +1125,57 @@
         }
 
         // Storage Functions
-        const storage = {};
-        
-// الحفظ في ذاكرة الهاتف الدائمة (localStorage)
+        localStorage = {};
+// نظام الحفظ الدائم في ذاكرة الهاتف (localStorage)
 function saveData() {
     const vals = [];
+    // جمع كافة القيم المدخلة في الجدول
     document.querySelectorAll("#gpa-body input").forEach(i => vals.push(i.value));
     
-    // حفظ المصفوفة في ذاكرة المتصفح/الهاتف تحت اسم hmd_bac_data
-    localStorage.setItem('hmd_bac_data', JSON.stringify(vals));
+    // تخزين البيانات في ذاكرة المتصفح/الهاتف تحت مفتاح خاص
+    localStorage.setItem('hmd_bac_saved_data', JSON.stringify(vals));
     
-    // إظهار رسالة النجاح للمستخدم
+    // تغيير نص الزر لإعلام المستخدم بالنجاح
     const btn = event.target;
     const originalHTML = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> تم الحفظ في الهاتف!';
+    
+    // إعادة الزر لشكلة الأصلي بعد ثانيتين
     setTimeout(() => {
         btn.innerHTML = originalHTML;
     }, 2000);
 }
 
-// استرجاع البيانات من ذاكرة الهاتف عند الضغط على الزر
 function restoreData() {
-    const savedData = localStorage.getItem('hmd_bac_data');
+    // جلب البيانات من ذاكرة الهاتف
+    const savedData = localStorage.getItem('hmd_bac_saved_data');
     const vals = savedData ? JSON.parse(savedData) : null;
     
     if(vals) {
+        // توزيع القيم المحفوظة على الخانات المناسبة
         document.querySelectorAll("#gpa-body input").forEach((i, idx) => {
             if(vals[idx] !== undefined) i.value = vals[idx];
         });
         
+        // إظهار رسالة نجاح على الزر
         const btn = event.target;
         const originalHTML = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-check"></i> تم استرجاع البيانات!';
-        setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+        btn.innerHTML = '<i class="fas fa-check"></i> تم استرجاع بياناتك!';
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+        }, 2000);
     } else {
+        // في حال لم تكن هناك بيانات محفوظة مسبقاً
         const btn = event.target;
         const originalHTML = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-times"></i> لا توجد بيانات';
-        setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+        btn.innerHTML = '<i class="fas fa-times"></i> لا توجد بيانات محفوظة';
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+        }, 2000);
     }
 }
-        function restoreData() {
-            const vals = storage.saved_grades ? JSON.parse(storage.saved_grades) : null;
-            if(vals) {
-                document.querySelectorAll("#gpa-body input").forEach((i, idx) => i.value = vals[idx] || "");
-                
-                // Show success message
-                const btn = event.target;
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-check"></i> تم الاسترجاع!';
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                }, 2000);
-            } else {
-                // Show error message
-                const btn = event.target;
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-times"></i> لا توجد بيانات';
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                }, 2000);
-            }
-        }
-    </script>
+</script>
 </body>
 </html>
+
 
