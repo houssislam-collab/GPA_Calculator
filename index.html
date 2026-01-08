@@ -1127,20 +1127,44 @@
         // Storage Functions
         const storage = {};
         
-        function saveData() {
-            const vals = [];
-            document.querySelectorAll("#gpa-body input").forEach(i => vals.push(i.value));
-            storage.saved_grades = JSON.stringify(vals);
-            
-            // Show success message
-            const btn = event.target;
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> تم الحفظ بنجاح!';
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-            }, 2000);
-        }
+// الحفظ في ذاكرة الهاتف الدائمة (localStorage)
+function saveData() {
+    const vals = [];
+    document.querySelectorAll("#gpa-body input").forEach(i => vals.push(i.value));
+    
+    // حفظ المصفوفة في ذاكرة المتصفح/الهاتف تحت اسم hmd_bac_data
+    localStorage.setItem('hmd_bac_data', JSON.stringify(vals));
+    
+    // إظهار رسالة النجاح للمستخدم
+    const btn = event.target;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i> تم الحفظ في الهاتف!';
+    setTimeout(() => {
+        btn.innerHTML = originalHTML;
+    }, 2000);
+}
 
+// استرجاع البيانات من ذاكرة الهاتف عند الضغط على الزر
+function restoreData() {
+    const savedData = localStorage.getItem('hmd_bac_data');
+    const vals = savedData ? JSON.parse(savedData) : null;
+    
+    if(vals) {
+        document.querySelectorAll("#gpa-body input").forEach((i, idx) => {
+            if(vals[idx] !== undefined) i.value = vals[idx];
+        });
+        
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> تم استرجاع البيانات!';
+        setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+    } else {
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-times"></i> لا توجد بيانات';
+        setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+    }
+}
         function restoreData() {
             const vals = storage.saved_grades ? JSON.parse(storage.saved_grades) : null;
             if(vals) {
@@ -1166,3 +1190,4 @@
     </script>
 </body>
 </html>
+
